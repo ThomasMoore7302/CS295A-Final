@@ -1,3 +1,7 @@
+module Dijkstra where
+
+open import Basics002
+
 {- ****THE CODE***
 
 
@@ -15,6 +19,33 @@ Dijkstra(G, s)
       if d(v) > d(u) + `(u, v)
         d(v) = d(u) + `(u, v)
 -}
+
+postulate
+  -- implement later
+  _≡?ᵛ_ : ∀ {n : ℕ} → vec[ n ] 𝔹 → vec[ n ] 𝔹 → ≡!
+  -- never implemented
+  ∞ : ℕ
+
+dijkstra-inner-loop : ∀ {n : ℕ} → graph[ n ] → idx n → idx n → vec[ n ] ℕ → vec[ n ] ℕ
+dijkstra-inner-loop g u v d with g #[ u ] #[ v ]
+… | O = {!d!} -- not adjacent
+… | I = {!!}  -- is adjacent
+
+--                                                            input                     output 
+--                                               input        priority     output       priority
+--                          whole graph  node    distances    queue        distances    queue
+--                          ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄  ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄
+dijkstra-loop : ∀ {n : ℕ} → graph[ n ] → idx n → vec[ n ] ℕ → vec[ n ] 𝔹 → vec[ n ] ℕ ∧ vec[ n ] 𝔹
+dijkstra-loop g i d R with R ≡?ᵛ const[vec]< _ > I
+… | [≡] = ⟨ d , R ⟩ -- done
+… | [≢] = {!!} -- not done
+
+-- this is what Dikjstra above in pseudocode corresponds to
+dijkstra-vertex : ∀ {n : ℕ} → graph[ n ] → idx n → vec[ n ] ℕ
+dijkstra-vertex = {!!}
+ 
+dijkstra : ∀ {n : ℕ} → graph[ n ] → matrix[ n , n ] ℕ
+dijkstra g = {!!}
 
 {- ***THE PROOF***
 
