@@ -28,7 +28,8 @@ postulate
 
 dijkstra-inner-loop : ∀ {n : ℕ} → graph[ n ] → idx n → idx n → vec[ n ] ℕ → vec[ n ] ℕ
 dijkstra-inner-loop g u v d with g #[ u ] #[ v ]
-… | O = {!d!} -- not adjacent
+dijkstra-inner-loop g u v [] | O = []
+dijkstra-inner-loop g u v (x ∷ d) | O = x ∷ d -- not adjacent
 … | I = {!!}  -- is adjacent
 
 --                                                            input                     output 
@@ -45,7 +46,8 @@ dijkstra-vertex : ∀ {n : ℕ} → graph[ n ] → idx n → vec[ n ] ℕ
 dijkstra-vertex = {!!}
  
 dijkstra : ∀ {n : ℕ} → graph[ n ] → matrix[ n , n ] ℕ
-dijkstra g = {!!}
+dijkstra [] = []
+dijkstra (x ∷ g) = {!!}
 
 {- ***THE PROOF***
 
