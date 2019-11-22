@@ -23,8 +23,28 @@ Dijkstra(G, s)
 postulate
   -- implement later
   _≡?ᵛ_ : ∀ {n : ℕ} → vec[ n ] 𝔹 → vec[ n ] 𝔹 → ≡!
+  _≡?ⁱ_ : ∀ {n : ℕ} → idx n → idx n → ≡!
+  _<?ᴮ_ : ℕ → ℕ → 𝔹
   -- never implemented
   ∞ : ℕ
+
+pick-smallest : ∀ {n} → idx n → vec[ n ] ℕ → vec[ n ] 𝔹 → idx n
+pick-smallest {n} s d R =
+  let state₀ : idx n
+      state₀ = s
+      s-final₁ = vlfold d state₀ s-final-body
+      -- if i has been seen before, do nothing
+      -- if i has not been seen, and BOTH d(stateᵢ) < d(i) AND we have not seen stateᵢ before, then do nothing
+      s-final = vlfold d state₀ λ i d[i] stateᵢ →
+        CASE R #[ i ] ⩔ ((d #[ stateᵢ ] <?ᴮ d[i]) ⩓ R #[ stateᵢ ]) OF λ where
+          I → stateᵢ
+          O → i
+  in s-final
+    where
+      s-final-body : idx n → ℕ → idx n → idx n
+      s-final-body i d[i] stateᵢ with R #[ i ] ⩔ ((d #[ stateᵢ ] <?ᴮ d[i]) ⩓ R #[ stateᵢ ])
+      … | I = stateᵢ
+      … | O = i
 
 dijkstra-inner-loop : ∀ {n : ℕ} → graph[ n ] → idx n → idx n → vec[ n ] ℕ → vec[ n ] ℕ
 dijkstra-inner-loop g u v d with g #[ u ] #[ v ]
@@ -32,22 +52,37 @@ dijkstra-inner-loop g u v [] | O = []
 dijkstra-inner-loop g u v (x ∷ d) | O = x ∷ d -- not adjacent
 … | I = {!!}  -- is adjacent
 
---                                                            input                     output 
---                                               input        priority     output       priority
---                          whole graph  node    distances    queue        distances    queue
---                          ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄  ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄
-dijkstra-loop : ∀ {n : ℕ} → graph[ n ] → idx n → vec[ n ] ℕ → vec[ n ] 𝔹 → vec[ n ] ℕ ∧ vec[ n ] 𝔹
-dijkstra-loop g i d R with R ≡?ᵛ const[vec]< _ > I
+--                                                                               
+--                                       input        input        output       outrut
+--                          whole graph  distances    seen set     distances    seen set
+--                          ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄  ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄
+dijkstra-loop : ∀ {n : ℕ} → graph[ n ] → vec[ n ] ℕ → vec[ n ] 𝔹 → vec[ n ] ℕ ∧ vec[ n ] 𝔹
+dijkstra-loop g d R with R ≡?ᵛ const[vec]< _ > I
 … | [≡] = ⟨ d , R ⟩ -- done
 … | [≢] = {!!} -- not done
 
 -- this is what Dikjstra above in pseudocode corresponds to
 dijkstra-vertex : ∀ {n : ℕ} → graph[ n ] → idx n → vec[ n ] ℕ
-dijkstra-vertex = {!!}
- 
+dijkstra-vertex {n} g s =
+  -- initial output distances
+  let d₀ : vec[ n ] ℕ
+      d₀ = (const[vec]< n > ∞) #[ s ↦ 0 ]
+      -- d′ : vec[ n ] ℕ
+      -- R′ : vec[ n ] 𝔹
+      ⟨ d′ , R′ ⟩ = dijkstra-loop g d₀ (const[vec]< n > O)
+  in d′
+
 dijkstra : ∀ {n : ℕ} → graph[ n ] → matrix[ n , n ] ℕ
 dijkstra [] = []
 dijkstra (x ∷ g) = {!!}
+
+-- EXAMPLE OF NESTED CASE STATEMENT (like with, but can be nested)
+  -- vlfold (const[vec]< n > •) state₀ λ u _ stateᵢ {- <- loop-intermediate state -} →
+  --   CASE (s ≡?ⁱ u) OF λ where
+  --     [≡] → stateᵢ
+  --     -- you have some u ≠ s, run dijkstra-loop on u
+  --     [≢] → {!dikjstra-loop g u stateᵢ!}
+ 
 
 {- ***THE PROOF***
 
@@ -98,3 +133,32 @@ Combining these inequalities in reverse order gives us the contradiction that d(
 
 This lemma shows the algorithm is correct by “applying” the lemma for R = V .
 -}
+
+
+---
+-- notes from 11-22-19
+
+_ :
+  let xs = 10 ∷ 11 ∷ 12 ∷ []
+      ys = 20 ∷ 21 ∷ 22 ∷ []
+  in vlfold xs ⟨ O , 100 ⟩ (λ where i x ⟨ b , n ⟩ → ⟨ not b , n + x + ys #[ i ] ⟩)
+  ≡
+  ⟨ I , 196 ⟩
+_ = ↯
+
+-- do something for all indices N
+-- e.g., for each index, look up a value at that index and compute the
+-- sum
+-- let xs = [10,11,12]
+-- n = 0
+-- for i ∈ indices(xs):
+--   n = n + xs[i] 
+_ :
+  let xs : vec[ 3 ] ℕ
+      xs = 10 ∷ 11 ∷ 12 ∷ []
+      is : vec[ 3 ] 𝟙
+      -- is = • ∷ • ∷ • ∷ []
+      is = const[vec]< 3 > •
+  in vlfold is 0 (λ i _ n → n + xs #[ i ]) ≡ 33
+_ = ↯
+
