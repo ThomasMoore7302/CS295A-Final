@@ -27,6 +27,8 @@ postulate
   _<?ᴮ_ : ℕ → ℕ → 𝔹
   -- never implemented
   ∞ : ℕ
+
+
 -- picking the smallest weight to descide on where to move next and how weights should be changed.
 pick-smallest : ∀ {n} → idx n → vec[ n ] ℕ → vec[ n ] 𝔹 → idx n
 pick-smallest {n} s d R =
@@ -77,12 +79,7 @@ dijkstra [] = []
 dijkstra (x ∷ g) = dijkstra-vertex (x ∷ g) Z ∷ {!dijkstra-vertex (x ∷ g)  !} 
 
 
--- EXAMPLE OF NESTED CASE STATEMENT (like with, but can be nested)
-  -- vlfold (const[vec]< n > •) state₀ λ u _ stateᵢ {- <- loop-intermediate state -} →
-  --   CASE (s ≡?ⁱ u) OF λ where
-  --     [≡] → stateᵢ
-  --     -- you have some u ≠ s, run dijkstra-loop on u
-  --     [≢] → {!dikjstra-loop g u stateᵢ!}
+
  
 
 {- ***THE PROOF***
@@ -163,3 +160,9 @@ _ :
   in vlfold is 0 (λ i _ n → n + xs #[ i ]) ≡ 33
 _ = ↯
 
+-- EXAMPLE OF NESTED CASE STATEMENT (like with, but can be nested)
+  -- vlfold (const[vec]< n > •) state₀ λ u _ stateᵢ {- <- loop-intermediate state -} →
+  --   CASE (s ≡?ⁱ u) OF λ where
+  --     [≡] → stateᵢ
+  --     -- you have some u ≠ s, run dijkstra-loop on u
+  --     [≢] → {!dikjstra-loop g u stateᵢ!}
