@@ -50,7 +50,7 @@ dijkstra-inner-loop : ∀ {n : ℕ} → graph[ n ] → idx n → idx n → vec[ 
 dijkstra-inner-loop g u v d with g #[ u ] #[ v ]
 dijkstra-inner-loop g u v [] | O = []
 dijkstra-inner-loop g u v (x ∷ d) | O = x ∷ d -- not adjacent
-… | I = {!!}  -- is adjacent
+… | I = d  -- is adjacent
 
 --                                                                               
 --                                       input        input        output       outrut
@@ -59,7 +59,7 @@ dijkstra-inner-loop g u v (x ∷ d) | O = x ∷ d -- not adjacent
 dijkstra-loop : ∀ {n : ℕ} → graph[ n ] → vec[ n ] ℕ → vec[ n ] 𝔹 → vec[ n ] ℕ ∧ vec[ n ] 𝔹
 dijkstra-loop g d R with R ≡?ᵛ const[vec]< _ > I
 … | [≡] = ⟨ d , R ⟩ -- done
-… | [≢] = {!!} -- not done
+… | [≢] = ⟨ d , R ⟩ -- not done
 
 -- this is what Dikjstra above in pseudocode corresponds to
 dijkstra-vertex : ∀ {n : ℕ} → graph[ n ] → idx n → vec[ n ] ℕ
@@ -74,7 +74,7 @@ dijkstra-vertex {n} g s =
 
 dijkstra : ∀ {n : ℕ} → graph[ n ] → matrix[ n , n ] ℕ
 dijkstra [] = []
-dijkstra (x ∷ g) = {!!}
+dijkstra (x ∷ g) = ({!!} ∷ {!!}) ∷ {!!}
 
 -- EXAMPLE OF NESTED CASE STATEMENT (like with, but can be nested)
   -- vlfold (const[vec]< n > •) state₀ λ u _ stateᵢ {- <- loop-intermediate state -} →
