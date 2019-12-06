@@ -2,7 +2,7 @@ module Dijkstra where
 
 open import Basics002
 
-{- ****THE CODE***
+{- ***THE CODE***
 
 
 G is the input graph, s is the source vertex, `(uv) is the length of an edge from u to v, and V is the set of
@@ -21,13 +21,13 @@ Dijkstra(G, s)
 -}
 
 postulate
-  -- implement later
   _≡?ᵛ_ : ∀ {n : ℕ} → vec[ n ] 𝔹 → vec[ n ] 𝔹 → ≡!
   _≡?ⁱ_ : ∀ {n : ℕ} → idx n → idx n → ≡!
   _<?ᴮ_ : ℕ → ℕ → 𝔹
-  -- never implemented
   ∞ : ℕ
--- picking the smallest weight to descide on where to move next and how weights should be changed.
+
+
+-- picking the smallest weight to know where to move next and how weights should be changed.
 pick-smallest : ∀ {n} → idx n → vec[ n ] ℕ → vec[ n ] 𝔹 → idx n
 pick-smallest {n} s d R =
   let state₀ : idx n
@@ -46,14 +46,50 @@ pick-smallest {n} s d R =
       … | I = stateᵢ
       … | O = i
 
+-- determining adjacency 
 dijkstra-inner-loop : ∀ {n : ℕ} → graph[ n ] → idx n → idx n → vec[ n ] ℕ → vec[ n ] ℕ
 dijkstra-inner-loop g u v d with g #[ u ] #[ v ]
 dijkstra-inner-loop g u v [] | O = []
 dijkstra-inner-loop g u v (x ∷ d) | O = x ∷ d -- not adjacent
 … | I = d  -- is adjacent
 
+G1 : graph[ 2 ]
+G1 = [ [ O , I ]
+     , [ O , O ]
+     ]
+
+G2 : graph[ 2 ]
+G2 = [ [ I , O ]
+     , [ O , O ]
+     ]
+
+G3 : graph[ 2 ]
+G3 = [ [ I , I ]
+     , [ O , O ]
+     ]
+
+G4 : graph[ 2 ]
+G4 = [ [ O , O ]
+     , [ O , O ]
+     ]
+
+_ : dijkstra-inner-loop G1 Z Z ≡ dijkstra-inner-loop [ [ O , I ] , [ O , O ] ] Z Z
+_ = ↯
+
+_ : dijkstra-inner-loop G2 Z Z  ≡ dijkstra-inner-loop [ [ I , O ] , [ O , O ] ] Z Z
+_ = ↯ 
+
+_ : dijkstra-inner-loop G3 Z Z  ≡ dijkstra-inner-loop [ [ I , I ] , [ O , O ] ] Z Z
+_ = ↯
+
+_ : dijkstra-inner-loop G4 Z Z  ≡ dijkstra-inner-loop [ [ O , O ] , [ O , O ] ] Z Z
+_ = ↯ 
+
+
+
+
 --                                                                               
---                                       input        input        output       outrut
+--                                       input        input        output       output
 --                          whole graph  distances    seen set     distances    seen set
 --                          ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄  ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄   ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄
 dijkstra-loop : ∀ {n : ℕ} → graph[ n ] → vec[ n ] ℕ → vec[ n ] 𝔹 → vec[ n ] ℕ ∧ vec[ n ] 𝔹
@@ -74,15 +110,10 @@ dijkstra-vertex {n} g s =
 
 dijkstra : ∀ {n : ℕ} → graph[ n ] → matrix[ n , n ] ℕ
 dijkstra [] = []
-dijkstra (x ∷ g) = dijkstra-vertex (x ∷ g) Z ∷ {!dijkstra-vertex (x ∷ g)  !} 
+dijkstra (x ∷ g) = dijkstra-vertex (x ∷ g) Z ∷ {!!} 
 
 
--- EXAMPLE OF NESTED CASE STATEMENT (like with, but can be nested)
-  -- vlfold (const[vec]< n > •) state₀ λ u _ stateᵢ {- <- loop-intermediate state -} →
-  --   CASE (s ≡?ⁱ u) OF λ where
-  --     [≡] → stateᵢ
-  --     -- you have some u ≠ s, run dijkstra-loop on u
-  --     [≢] → {!dikjstra-loop g u stateᵢ!}
+
  
 
 {- ***THE PROOF***
@@ -163,3 +194,10 @@ _ :
   in vlfold is 0 (λ i _ n → n + xs #[ i ]) ≡ 33
 _ = ↯
 
+{-- EXAMPLE OF NESTED CASE STATEMENT (like with, but can be nested)
+  -- vlfold (const[vec]< n > •) state₀ λ u _ stateᵢ {- <- loop-intermediate state -} →
+  --   CASE (s ≡?ⁱ u) OF λ where
+  --     [≡] → stateᵢ
+  --     -- you have some u ≠ s, run dijkstra-loop on u
+  --     [≢] → {!dikjstra-loop g u stateᵢ!}
+--}
